@@ -4,16 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nubepaso · Plantillas Ortopédicas 4D</title>
-    <meta name="description" content="Plantillas ortopédicas Nubepaso: alivio para talones, rodillas y lumbares. Envío gratis 24/48h y pago al recibir." />
+    <meta name="description" content="Plantillas ortopédicas Nubepaso: alivio para talones, rodillas y lumbares. Envío gratis 24/48h y pago al recibir en casa." />
     <link rel="icon" href="/images/logo.webp" />
   </head>
   <body>
-    <!-- Formulario oculto para que Netlify detecte el formulario "pedido" al desplegar -->
-    <form name="pedido" data-netlify="true" netlify-honeypot="bot-field" hidden>
-      <input name="bot-field" /><input name="pack" /><input name="total" /><input name="talla" />
-      <input name="nombre" /><input name="telefono" /><input name="email" /><input name="direccion" />
-      <input name="ciudad" /><input name="codigo_postal" /><input name="provincia" /><textarea name="notas"></textarea>
-      <input name="metodo_pago" /><input name="estado_pago" /><input name="paypal_id" />
+    <!-- Formulario oculto para que Netlify detecte el formulario "opinion" al desplegar -->
+    <form name="opinion" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="bot-field" /><input name="nombre" /><input name="ciudad" />
+      <input name="estrellas" /><textarea name="opinion"></textarea>
     </form>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
