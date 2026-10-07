@@ -4,7 +4,10 @@
 export const IMAGES = {
   logo: '/images/logo.webp',
   hero: '/images/producto-2.webp', // problemas que soluciona
-  cushion: '/images/producto-7.webp', // amortiguación (2ª imagen)
+  cushion: '/images/producto-7.webp', // amortiguación (2ª imagen, se ve mientras carga el vídeo)
+  cushionVideo: '/images/semelles.mp4', // animación de amortiguación (convertida del GIF, mucho más ligera)
+  cushionWebm: '/images/semelles.webm', // misma animación en WebM (Chrome, Android)
+  cushionGif: '/images/semelles.gif', // GIF original, por si el navegador no reproduce vídeo
   clouds: '/images/producto-1.webp', // camina sobre las nubes
   arch: '/images/producto-3.webp', // tecnología de arco
   massage: '/images/producto-4.webp', // puntos de masaje
