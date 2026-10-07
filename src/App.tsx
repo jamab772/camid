@@ -183,6 +183,10 @@ export default function App() {
           <strong className="text-navy">El problema no eres tú, es el calzado duro que usas a diario.</strong> Dale a
           tus pies el descanso que suplican.
         </Lead>
+        <Img src={IMAGES.cushion} alt="Amortiguación de la plantilla Nubepaso" className="mt-6 w-full rounded-2xl shadow-sm" />
+        <p className="mt-3 text-center text-base text-slate-500">
+          Presiona y suelta: la espuma recupera su forma al instante y absorbe el impacto de cada paso.
+        </p>
       </section>
 
       {/* Camina sobre nubes */}
