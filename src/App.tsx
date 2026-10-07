@@ -1,523 +1,380 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Star, 
-  Truck, 
-  Zap, 
-  ShieldCheck, 
-  CheckCircle2, 
-  ChevronDown, 
-  Package, 
-  ShieldQuestion,
-  Wrench,
-  Paintbrush
+import { useState, type ReactNode } from 'react';
+import {
+  ArrowRight,
+  Banknote,
+  Check,
+  CheckCircle2,
+  Headphones,
+  Lock,
+  MapPin,
+  Minus,
+  Plus,
+  Scissors,
+  ShieldCheck,
+  Star,
+  Stethoscope,
+  Truck,
+  X,
 } from 'lucide-react';
+import { COMPARISON, FAQ, FEATURES, IMAGES, PACKS, PAINS, RATING, REVIEWS } from './content';
 
-const LOGO_URL = "https://i.postimg.cc/FsCzMRd5/logo-nbv.png";
-const HERO_IMAGE = "https://i.postimg.cc/90RyyRcn/product-file.jpg";
+const euro = (n: number) => n.toFixed(2).replace('.', ',') + ' €';
 
-const BENEFITS = [
-  {
-    title: "Versatilidad Total",
-    desc: "Pinta paredes, techos, muebles y vallas con una facilidad asombrosa. Se adapta a cualquier superficie, incluso las más rugosas.",
-    img: "https://i.postimg.cc/mkz77zTm/PT-4.jpg"
-  },
-  {
-    title: "MÁXIMA PRECISIÓN",
-    desc: "Su cabezal ajustable permite 3 modos de pulverización: horizontal, vertical y circular. Dile adiós a las gotas y los rodillazos.",
-    img: "https://i.postimg.cc/6q2CC2BS/t-p-2.jpg"
-  },
-  {
-    title: "PUERZA BRUTA 900W",
-    desc: "Motor de alta resistencia para un flujo constante. No se detiene ante nada, garantizando un acabado profesional en tiempo récord.",
-    img: "https://i.postimg.cc/nrjqqjnd/TP-5.jpg"
-  },
-  {
-    title: "ACABADO PERFECTO",
-    desc: "Cero marcas de brocha. Una sola pasada es suficiente para cubrir superficies difficiles con una capa uniforme de pintura.",
-    img: "https://i.postimg.cc/5yY88Yf7/TP-7.jpg"
-  },
-  {
-    title: "CALIDAD INDUSTRIAL",
-    desc: "Construido para durar. Materiales robustos que soportan las jornadas más exigentes de bricolaje en casa.",
-    img: "https://i.postimg.cc/wMyDDy94/TP5.jpg"
+function Img({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div
+        className={`flex aspect-square items-center justify-center bg-gradient-to-br from-sky/30 to-brand/20 p-4 text-center text-xs font-semibold text-navy ${className}`}
+      >
+        Imagen pendiente
+        <br />
+        {src.split('/').pop()}
+      </div>
+    );
   }
-];
+  return <img src={src} alt={alt} loading="lazy" onError={() => setFailed(true)} className={className} />;
+}
 
-const TESTIMONIALS = [
-  {
-    name: "Carlos M.",
-    stars: 5,
-    text: "Tenía miedo de que se taponara el conducto, pero es increíblemente fácil de lavar. Desmontas las piezas y listo. He pintado mi salón de 30m2 en media hora real. ¡Sin una gota en el suelo!"
-  },
-  {
-    name: "Elena R.",
-    stars: 5,
-    text: "He pintado toda la fachada de mi casa de campo y el motor de 900W ni se ha inmutado. La potencia es constante y el resultado parece de profesional. El cable largo me dió mucha libertad."
-  },
-  {
-    name: "Javier L.",
-    stars: 5,
-    text: "El pago a la entrega me dio mucha tranquilidad para pedirlo. Llegó en 48h y ya lo he usado para renovar unas sillas viejas. El acabado es infinitamente mejor que con spray de bote."
-  },
-  {
-    name: "Marta G.",
-    stars: 5,
-    text: "Dudaba si serviría para pintura plástica al agua, pero funciona de maravilla si la diluyes un poco. Es muy intuitivo de usar, hasta para alguien que nunca ha cogido una pistola."
-  },
-  {
-    name: "Roberto S.",
-    stars: 5,
-    text: "Relación calidad-precio inmejorable. He ahorrado litros de pintura comparado con el rodillo porque aprovecha cada gramo. Por 59€ es una inversión que se paga sola en el primer día."
-  }
-];
+function CtaButton({ children }: { children: ReactNode }) {
+  return (
+    <a
+      href="#pedido"
+      className="mx-auto flex w-full max-w-sm items-center justify-center gap-2 rounded-full bg-brand px-6 py-4 text-sm font-extrabold uppercase tracking-wide text-white shadow-lg shadow-brand/30 transition hover:bg-navy"
+    >
+      {children}
+      <ArrowRight className="h-4 w-4" />
+    </a>
+  );
+}
 
-const FAQS = [
-  {
-    q: "¿Sirve para pintura plástica, al agua o al aceite?",
-    a: "Sí, el Total Painter es compatible con pinturas plásticas, esmaltes al agua, barnices y lacas al aceite. Solo recomendamos diluir ligeramente la pintura según las instrucciones para un flujo óptimo."
-  },
-  {
-    q: "¿Es difícil de limpiar después de usarlo?",
-    a: "No, es totalmente desmontable en segundos. Todas las piezas que entran en contacto con la pintura se lavan bajo el grifo. Es mucho más rápido que limpiar brochas y rodillos."
-  },
-  {
-    q: "¿Tiene cable o batería?",
-    a: "Funciona con cable de alta resistencia. Hemos diseñado este modelo así para no perder potencia (900W reales) a mitad del trabajo, algo que suele pasar con los modelos de batería baratos."
-  },
-  {
-    q: "¿Qué incluye el pack de 59€?",
-    a: "Recibirás la pistola Total Painter Pro de 900W, el depósito de gran capacidad, viscosímetro para medir la densité y el manual completo en español. ¡Y el envío es GRATIS!"
-  },
-  {
-    q: "¿Tiene garantía?",
-    a: "Sí, todos nuestros equipos tienen 2 años de garantía oficial contra cualquier defecto de fabricación. Tu satisfacción es nuestra prioridad absoluta."
-  }
-];
+function Title({ children }: { children: ReactNode }) {
+  return <h2 className="text-center font-display text-2xl font-extrabold text-navy">{children}</h2>;
+}
 
-const FAIcon = ({ isOpen }: { isOpen: boolean }) => (
-  <motion.span 
-    animate={{ rotate: isOpen ? 180 : 0 }}
-    className="text-industrial-yellow"
-  >
-    <ChevronDown className="w-6 h-6" />
-  </motion.span>
-);
+function Stars() {
+  return (
+    <div className="flex gap-0.5 text-amber-400">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star key={i} className="h-4 w-4 fill-current" />
+      ))}
+    </div>
+  );
+}
 
 export default function App() {
-  const [activeFaq, setActiveFaq] = useState<number | null>(null);
-
-  const scrollToCheckout = () => {
-    document.getElementById('checkout')?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const [pack, setPack] = useState('2');
+  const [openFaq, setOpenFaq] = useState<number | null>(FAQ.length - 1);
 
   return (
-    <div className="min-h-screen selection:bg-industrial-yellow selection:text-black">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-industrial-dark/90 backdrop-blur-md border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-          <img src={LOGO_URL} alt="Total Painter Logo" className="h-10 md:h-12 w-auto" referrerPolicy="no-referrer" />
-          <button 
-            onClick={scrollToCheckout}
-            className="hidden md:flex items-center gap-2 bg-industrial-yellow text-black px-6 py-2.5 rounded-sm font-display font-black text-sm uppercase tracking-wider hover:bg-industrial-yellow/90 transition-all active:scale-95 shadow-[0_4px_0_0_#CCAA00]"
-          >
-            ¡COMPRAR AHORA!
-          </button>
-          <div className="md:hidden">
-            <span className="text-industrial-yellow font-display font-black text-xl italic uppercase">59€</span>
-          </div>
-        </div>
+    <div className="mx-auto min-h-screen max-w-xl bg-white shadow-xl shadow-navy/5">
+      {/* Barra superior */}
+      <div className="flex items-center justify-center gap-3 bg-navy px-4 py-2 text-[11px] font-semibold text-white">
+        <span className="flex items-center gap-1">
+          <Truck className="h-3.5 w-3.5" /> Envío GRATIS 24/48h
+        </span>
+        <span className="opacity-40">|</span>
+        <span className="flex items-center gap-1 text-sky">
+          <Banknote className="h-3.5 w-3.5" /> Paga al recibir en casa
+        </span>
+      </div>
+
+      {/* Logo */}
+      <header className="flex justify-center bg-white py-3">
+        <img src={IMAGES.logo} alt="Nubepaso" className="h-20 w-auto" />
       </header>
 
-      {/* Ticker / Marquee Band */}
-      <div className="bg-industrial-yellow text-black py-2 overflow-hidden border-b border-black/10 z-[60] relative mt-20">
-        <div className="flex whitespace-nowrap animate-marquee font-display font-black text-xs uppercase tracking-widest">
-          <span className="mx-4">ENVÍO 24-48 HORAS • PAGO AL RECIBIR • 15 DÍAS DE RETRACTACIÓN • ENVÍO GRATIS • </span>
-          <span className="mx-4">ENVÍO 24-48 HORAS • PAGO AL RECIBIR • 15 DÍAS DE RETRACTACIÓN • ENVÍO GRATIS • </span>
-          <span className="mx-4">ENVÍO 24-48 HORAS • PAGO AL RECIBIR • 15 DÍAS DE RETRACTACIÓN • ENVÍO GRATIS • </span>
-          <span className="mx-4">ENVÍO 24-48 HORAS • PAGO AL RECIBIR • 15 DÍAS DE RETRACTACIÓN • ENVÍO GRATIS • </span>
+      {/* Hero */}
+      <section className="bg-gradient-to-b from-cloud to-white px-4 pb-10 pt-6 text-center">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-sky/40 bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-brand">
+          <Stethoscope className="h-3.5 w-3.5" /> Recomendado por podólogos
+        </span>
+        <h1 className="mt-4 font-display text-3xl font-extrabold leading-tight text-navy">
+          ¿Tus pies no aguantan más <span className="text-brand">al final del día</span>?
+        </h1>
+        <p className="mx-auto mt-3 max-w-md text-sm text-slate-600">
+          Descubre las <strong className="text-navy">Plantillas Ortopédicas 4D™</strong>: alivio instantáneo para
+          talones, rodillas y lumbares.
+        </p>
+        <Img src={IMAGES.hero} alt="Plantillas Nubepaso" className="mx-auto mt-6 w-full max-w-md rounded-2xl shadow-md" />
+        <div className="mt-6">
+          <CtaButton>Quiero mis plantillas ahora</CtaButton>
         </div>
-      </div>
+        <div className="mt-3 flex justify-center gap-4 text-[11px] text-slate-500">
+          <span className="flex items-center gap-1">
+            <Banknote className="h-3.5 w-3.5 text-ok" /> Pago contra reembolso
+          </span>
+          <span className="flex items-center gap-1">
+            <Truck className="h-3.5 w-3.5 text-ok" /> Envío gratis 24/48h
+          </span>
+        </div>
+      </section>
 
-      <main>
-        {/* Hero Section */}
-        <section className="relative overflow-hidden pt-12 pb-24 md:pt-24 md:pb-32 px-4">
-          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }} 
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="z-10"
-            >
-              <span className="bg-industrial-yellow text-black px-3 py-1 font-display font-black text-xs uppercase tracking-widest mb-6 inline-block">
-                SOLUCIÓN PROFESIONAL
-              </span>
-              <h1 className="text-2xl md:text-7xl font-display font-black leading-[0.9] text-white uppercase mb-6 italic">
-                ¿Harto de perder fines de semana enteros <span className="text-industrial-yellow">pintando a rodillo?</span>
-              </h1>
-              <p className="text-lg md:text-xl text-gray-400 mb-8 max-w-lg leading-relaxed">
-                Termina un salón en solo 30 minutos. Sin marcas, sin gotas y con un acabado de revista. El pistoletazo de salida para tu nuevo hogar empieza aquí.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 items-center">
-                <button 
-                  onClick={scrollToCheckout}
-                  className="w-full sm:w-auto bg-industrial-yellow text-black px-10 py-5 rounded-sm font-display font-black text-xl uppercase tracking-wider hover:bg-industrial-yellow/90 transition-all shadow-[0_6px_0_0_#CCAA00] active:translate-y-1 active:shadow-none"
+      {/* Packs */}
+      <section className="px-4 pb-8">
+        <Title>Elige tu pack</Title>
+        <p className="mt-1 text-center text-xs text-slate-500">Ahorra más eligiendo un pack mayor.</p>
+        <div className="mt-6 space-y-4">
+          {PACKS.map((p) => {
+            const active = pack === p.id;
+            return (
+              <button
+                key={p.id}
+                onClick={() => setPack(p.id)}
+                className={`relative flex w-full items-center gap-3 rounded-2xl border-2 p-4 text-left transition ${
+                  active ? 'border-ok bg-ok-soft' : 'border-slate-200 bg-white hover:border-sky'
+                }`}
+              >
+                {p.popular && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-ok px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+                    ★ Más popular
+                  </span>
+                )}
+                <span
+                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
+                    active ? 'border-ok bg-ok' : 'border-slate-300'
+                  }`}
                 >
-                  ¡SÍ, LO QUIERO! (PAGA AL RECIBIR)
-                </button>
-                <div className="flex items-center gap-2 text-gray-400 font-display text-sm">
-                  <Truck className="w-5 h-5 text-industrial-yellow" />
-                  Envío Gratis 24/48h
-                </div>
-              </div>
-            </motion.div>
+                  {active && <Check className="h-3 w-3 text-white" />}
+                </span>
+                <span className="flex-1">
+                  <span className="block font-bold text-navy">{p.title}</span>
+                  <span className="block text-xs text-slate-500">{p.subtitle}</span>
+                </span>
+                <span className="text-right">
+                  <span className="block font-display text-xl font-extrabold text-brand">{euro(p.price)}</span>
+                  {p.save && (
+                    <span className="mt-1 inline-block rounded-md bg-ok-soft px-2 py-0.5 text-[10px] font-bold text-ok">
+                      Ahorra {euro(p.save)}
+                    </span>
+                  )}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-6">
+          <CtaButton>Quiero aprovechar la oferta</CtaButton>
+        </div>
+        <p className="mt-3 flex items-center justify-center gap-1 text-center text-[11px] text-slate-500">
+          <Lock className="h-3 w-3 text-ok" /> La selección de pack, talla y pago se realiza de forma segura en el
+          formulario de pedido.
+        </p>
+      </section>
 
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }} 
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="absolute inset-0 bg-industrial-yellow/20 blur-[120px] rounded-full" />
-              <img 
-                src={HERO_IMAGE} 
-                alt="Total Painter Product" 
-                className="relative z-10 w-full h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform md:-rotate-3"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute -bottom-10 -right-4 bg-industrial-dark p-6 border border-industrial-yellow/30 rounded-sm z-20 hidden md:block">
-                <div className="flex items-center gap-1 mb-1">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-industrial-yellow text-industrial-yellow" />)}
-                </div>
-                <p className="font-display font-bold text-lg leading-tight uppercase italic">+12,000 Pintores<br/>Satisfechos</p>
-              </div>
-            </motion.div>
+      {/* Garantías */}
+      <section className="grid grid-cols-4 gap-2 bg-cloud px-3 py-6 text-center">
+        {[
+          { icon: ShieldCheck, label: 'Garantía satisfacción' },
+          { icon: Truck, label: 'Envío rápido 24/48h' },
+          { icon: Banknote, label: 'Pago seguro' },
+          { icon: Headphones, label: 'Atención al cliente' },
+        ].map(({ icon: Icon, label }) => (
+          <div key={label} className="flex flex-col items-center gap-2">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-sky to-brand text-white shadow-md">
+              <Icon className="h-5 w-5" />
+            </span>
+            <span className="text-[11px] font-semibold leading-tight text-navy">{label}</span>
           </div>
-        </section>
+        ))}
+      </section>
 
-        {/* Benefits Section */}
-        <section className="bg-industrial-gray py-24 px-4 border-y border-white/5">
-          <div className="max-w-7xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-6xl font-display font-black uppercase italic mb-4">
-              ¿Por qué Total Painter es <span className="text-industrial-yellow">la única opción?</span>
-            </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              No es solo una herramienta, es el fin de los problemas de pintura. Tecnología de pulverización de aire constante para acabados impecables.
+      {/* Problema */}
+      <section className="px-4 py-10">
+        <Title>
+          Pasar horas de pie tiene un <span className="text-brand">precio muy caro</span>
+        </Title>
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          {PAINS.map((p) => (
+            <span key={p} className="rounded-full bg-bad-soft px-3 py-1 text-xs font-semibold text-bad">
+              ✕ {p}
+            </span>
+          ))}
+        </div>
+        <p className="mx-auto mt-4 max-w-md text-center text-sm text-slate-600">
+          Sabemos lo duro que es terminar tu jornada y no tener ganas de nada.{' '}
+          <strong className="text-navy">El problema no eres tú, es el calzado duro que usas a diario.</strong> Dale a
+          tus pies el descanso que suplican.
+        </p>
+        <Img src={IMAGES.problem} alt="Nubepaso en el día a día" className="mt-6 w-full rounded-2xl" />
+      </section>
+
+      {/* Tecnología */}
+      <section className="bg-cloud px-4 py-10">
+        <Title>
+          Tecnología de Masaje <span className="text-brand">4D</span> a cada paso
+        </Title>
+        <div className="mt-6 space-y-3">
+          {FEATURES.map((f) => (
+            <div key={f.title} className="flex gap-3 rounded-2xl bg-white p-4 shadow-sm">
+              <CheckCircle2 className="h-6 w-6 shrink-0 fill-ok text-white" />
+              <div>
+                <h3 className="font-bold text-navy">{f.title}</h3>
+                <p className="text-xs text-slate-500">{f.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <Img src={IMAGES.tech1} alt="Detalle de la plantilla" className="w-full rounded-2xl" />
+          <Img src={IMAGES.tech2} alt="Amortiguación de la plantilla" className="w-full rounded-2xl" />
+        </div>
+
+        <div className="mt-6 rounded-2xl bg-white p-5 text-center shadow-sm">
+          <h3 className="flex items-center justify-center gap-2 font-display text-lg font-extrabold text-navy">
+            <Scissors className="h-5 w-5 text-sky" /> ¿Miedo a equivocarte de talla? ¡Imposible!
+          </h3>
+          <p className="mt-2 text-xs text-slate-500">
+            Talla universal y totalmente ajustable: recórtalas siguiendo las líneas guía traseras en segundos.{' '}
+            <strong className="text-navy">¡Sirven para cualquier zapato!</strong>
+          </p>
+          <Img src={IMAGES.sizes} alt="Plantillas recortables" className="mx-auto mt-4 w-full max-w-xs rounded-xl" />
+        </div>
+      </section>
+
+      {/* Comparativa */}
+      <section className="px-4 py-10">
+        <Title>
+          Nubepaso <span className="text-brand">vs</span> Otras plantillas
+        </Title>
+        <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 text-xs">
+          <div className="grid grid-cols-[1fr_80px_80px] bg-cloud font-semibold">
+            <div className="p-3 text-slate-500">Criterio</div>
+            <div className="flex flex-col items-center justify-center bg-brand p-2 text-white">
+              <Check className="h-4 w-4" /> Nubepaso
+            </div>
+            <div className="flex flex-col items-center justify-center p-2 text-center text-slate-500">
+              <X className="h-4 w-4" /> Otras
+            </div>
+          </div>
+          {COMPARISON.map((row) => (
+            <div key={row} className="grid grid-cols-[1fr_80px_80px] border-t border-slate-100">
+              <div className="p-3 font-medium text-navy">{row}</div>
+              <div className="flex items-center justify-center bg-brand/5">
+                <CheckCircle2 className="h-5 w-5 fill-ok text-white" />
+              </div>
+              <div className="flex items-center justify-center">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-bad-soft">
+                  <X className="h-3 w-3 text-bad" />
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <Img src={IMAGES.lifestyle} alt="Nubepaso" className="w-full" />
+
+      {/* Opiniones */}
+      <section className="bg-cloud px-4 py-10">
+        <Title>
+          Lo que dicen <span className="text-brand">nuestros clientes</span>
+        </Title>
+        <div className="mx-auto mt-4 flex w-fit items-center gap-3 rounded-2xl bg-white px-5 py-3 shadow-sm">
+          <span className="font-display text-3xl font-extrabold text-navy">{RATING.score}</span>
+          <div>
+            <Stars />
+            <p className="text-[11px] text-slate-500">
+              basado en <strong>{RATING.count}</strong> valoraciones
             </p>
           </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {BENEFITS.slice(0, 3).map((benefit, idx) => (
-              <motion.div 
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                viewport={{ once: true }}
-                className="group bg-industrial-dark border border-white/10 overflow-hidden hover:border-industrial-yellow/50 transition-colors"
-                id={`benefit-${idx + 1}`}
-              >
-                <div className="aspect-square overflow-hidden bg-black/20">
-                  <img 
-                    src={benefit.img} 
-                    alt={benefit.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                    referrerPolicy="no-referrer" 
-                  />
-                </div>
-                <div className="p-8">
-                  <h3 className="text-2xl font-display font-black uppercase italic mb-3 text-industrial-yellow">
-                    {benefit.title}
-                  </h3>
-                  <p className="text-gray-400 leading-relaxed">
-                    {benefit.desc}
+        </div>
+        <div className="mt-6 space-y-4">
+          {REVIEWS.map((r) => (
+            <div key={r.name} className="rounded-2xl bg-white p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-sky to-brand font-bold text-white">
+                  {r.name[0]}
+                </span>
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-navy">{r.name}</p>
+                  <p className="flex items-center gap-1 text-[11px] text-slate-400">
+                    <MapPin className="h-3 w-3" /> {r.city}
                   </p>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 mt-8">
-            {BENEFITS.slice(3).map((benefit, idx) => (
-              <motion.div 
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: (idx + 3) * 0.1 }}
-                viewport={{ once: true }}
-                className="group bg-industrial-dark border border-white/10 overflow-hidden hover:border-industrial-yellow/50 transition-colors"
-                id={`benefit-${idx + 4}`}
-              >
-                <div className="aspect-square overflow-hidden bg-black/20">
-                  <img 
-                    src={benefit.img} 
-                    alt={benefit.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                    referrerPolicy="no-referrer" 
-                  />
-                </div>
-                <div className="p-8">
-                  <h3 className="text-2xl font-display font-black uppercase italic mb-3 text-industrial-yellow">
-                    {benefit.title}
-                  </h3>
-                  <p className="text-gray-400 leading-relaxed">
-                    {benefit.desc}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* Social Proof */}
-        <section className="py-24 px-4 overflow-hidden">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
-              <div>
-                <h2 className="text-3xl md:text-5xl font-display font-black uppercase italic mb-2">
-                  Lo que dicen nuestros <span className="text-industrial-yellow">expertos caseros</span>
-                </h2>
-                <div className="flex items-center gap-2">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-industrial-yellow text-industrial-yellow" />)}
-                  </div>
-                  <span className="font-bold">4.9/5 basado en +2,500 reseñas</span>
-                </div>
+                <Stars />
               </div>
-              <CheckCircle2 className="w-16 h-16 text-industrial-yellow opacity-20 hidden md:block" />
+              <p className="mt-3 text-sm text-slate-600">"{r.text}"</p>
+              <span className="mt-3 inline-flex items-center gap-1 rounded-md bg-ok-soft px-2 py-0.5 text-[11px] font-semibold text-ok">
+                <Check className="h-3 w-3" /> Compra verificada
+              </span>
             </div>
+          ))}
+        </div>
+      </section>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              {TESTIMONIALS.map((t, idx) => (
-                <motion.div 
-                  key={idx}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  className={`p-8 bg-industrial-gray border border-white/10 shadow-xl ${idx >= 3 ? 'md:col-span-1.5' : ''}`}
-                  id={`testimonial-${idx + 1}`}
+      {/* Garantía */}
+      <section className="bg-ok-soft px-4 py-10 text-center">
+        <div className="mx-auto flex h-24 w-24 flex-col items-center justify-center rounded-full border-4 border-ok bg-white">
+          <span className="font-display text-3xl font-extrabold leading-none text-navy">15</span>
+          <span className="text-[10px] font-bold uppercase text-ok">días</span>
+        </div>
+        <h2 className="mt-4 font-display text-xl font-extrabold text-navy">Garantía de satisfacción 15 días</h2>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-slate-600">
+          Si no notas el alivio, te devolvemos el dinero. Sin preguntas, sin complicaciones.
+        </p>
+      </section>
+
+      {/* FAQ */}
+      <section className="px-4 py-10">
+        <Title>
+          Preguntas <span className="text-brand">frecuentes</span>
+        </Title>
+        <div className="mt-6 space-y-3">
+          {FAQ.map((f, i) => {
+            const open = openFaq === i;
+            return (
+              <div key={f.q} className={`rounded-2xl border bg-white ${open ? 'border-brand/40' : 'border-slate-200'}`}>
+                <button
+                  onClick={() => setOpenFaq(open ? null : i)}
+                  className="flex w-full items-center justify-between gap-3 p-4 text-left text-sm font-bold text-navy"
                 >
-                  <div className="flex mb-4">
-                    {[...Array(t.stars)].map((_, i) => <Star key={i} className="w-4 h-4 fill-industrial-yellow text-industrial-yellow" />)}
-                  </div>
-                  <p className="text-lg italic text-gray-300 mb-6 leading-relaxed">
-                    "{t.text}"
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-industrial-yellow rounded-full flex items-center justify-center font-display font-black text-black">
-                      {t.name[0]}
-                    </div>
-                    <div>
-                      <h4 className="font-bold">{t.name}</h4>
-                      <span className="text-xs text-industrial-yellow uppercase tracking-widest flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> Cliente Verificado
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ Section */}
-        <section className="bg-industrial-gray/50 py-24 px-4">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-16">
-              <ShieldQuestion className="w-16 h-16 text-industrial-yellow mx-auto mb-6 opacity-80" />
-              <h2 className="text-3xl md:text-5xl font-display font-black uppercase italic mb-4 text-center">
-                Preguntas <span className="text-industrial-yellow">Frecuentes</span>
-              </h2>
-            </div>
-            
-            <div className="space-y-4">
-              {FAQS.map((faq, idx) => (
-                <div key={idx} className="border border-white/10 bg-industrial-dark rounded-sm overflow-hidden" id={`faq-item-${idx}`}>
-                  <button 
-                    onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
-                    className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors"
+                  {f.q}
+                  <span
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
+                      open ? 'bg-brand text-white' : 'bg-cloud text-brand'
+                    }`}
                   >
-                    <span className="text-lg font-bold pr-8">{faq.q}</span>
-                    <FAIcon isOpen={activeFaq === idx} />
-                  </button>
-                  <AnimatePresence>
-                    {activeFaq === idx && (
-                      <motion.div 
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="p-6 pt-0 text-gray-400 leading-relaxed border-t border-white/5">
-                          {faq.a}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Checkout Section Form */}
-        <section id="checkout" className="py-24 px-4 bg-industrial-dark relative">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-16">
-            
-            {/* Promotion Info */}
-            <div className="md:flex-1">
-              <div className="bg-industrial-yellow text-black p-8 md:p-12 h-full flex flex-col justify-center">
-                <h2 className="text-4xl md:text-6xl font-display font-black uppercase italic leading-[0.9] mb-8">
-                  OFERTA EXCLUSIVA <br/> <span className="text-white opacity-80 line-through">100€</span>
-                </h2>
-                <div className="text-7xl md:text-9xl font-display font-black italic mb-8">
-                  59€
-                </div>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center gap-3 font-bold text-lg">
-                    <CheckCircle2 className="w-6 h-6" /> ENVÍO GRATIS A TODA ESPAÑA
-                  </li>
-                  <li className="flex items-center gap-3 font-bold text-lg">
-                    <CheckCircle2 className="w-6 h-6" /> PAGO CONTRA REEMBOLSO (SEGURO)
-                  </li>
-                  <li className="flex items-center gap-3 font-bold text-lg">
-                    <CheckCircle2 className="w-6 h-6" /> ENTREGA EN 24/48 HORAS
-                  </li>
-                  <li className="flex items-center gap-3 font-bold text-lg">
-                    <CheckCircle2 className="w-6 h-6" /> GARANTÍA DE 2 AÑOS INCLUIDA
-                  </li>
-                </ul>
-                <div className="flex items-center gap-4 pt-8 border-t border-black/10">
-                  <Zap className="w-12 h-12 fill-black" />
-                  <p className="font-display font-black text-xl uppercase italic">¡Solo quedan 14 unidades en stock!</p>
-                </div>
+                    {open ? <Minus className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+                  </span>
+                </button>
+                {open && <p className="px-4 pb-4 text-sm text-slate-500">{f.a}</p>}
               </div>
-            </div>
+            );
+          })}
+        </div>
+      </section>
 
-            {/* Form */}
-            <div className="md:flex-1">
-              <div className="bg-industrial-gray p-8 md:p-12 border border-white/10 shadow-2xl">
-                <h3 className="text-2xl md:text-3xl font-display font-black uppercase italic mb-8">
-                  RELLENA TUS DATOS <br/><span className="text-industrial-yellow">PARA EL ENVÍO</span>
-                </h3>
-                <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-                  <div>
-                    <label className="block text-xs uppercase tracking-widest font-black mb-2 text-gray-500">Nombre Completo</label>
-                    <input 
-                      type="text" 
-                      placeholder="Ej: Juan Pérez"
-                      className="w-full bg-industrial-dark border border-white/10 p-4 focus:border-industrial-yellow outline-none transition-colors text-white rounded-sm"
-                      id="input-name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs uppercase tracking-widest font-black mb-2 text-gray-500">Teléfono Movil</label>
-                    <input 
-                      type="tel" 
-                      placeholder="Ej: 600 000 000"
-                      className="w-full bg-industrial-dark border border-white/10 p-4 focus:border-industrial-yellow outline-none transition-colors text-white rounded-sm"
-                      id="input-tel"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs uppercase tracking-widest font-black mb-2 text-gray-500">Dirección de Entrega</label>
-                    <input 
-                      type="text" 
-                      placeholder="Calle, número, piso..."
-                      className="w-full bg-industrial-dark border border-white/10 p-4 focus:border-industrial-yellow outline-none transition-colors text-white rounded-sm"
-                      id="input-address"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs uppercase tracking-widest font-black mb-2 text-gray-500">Ciudad / Provincia</label>
-                    <input 
-                      type="text" 
-                      placeholder="Ej: Madrid"
-                      className="w-full bg-industrial-dark border border-white/10 p-4 focus:border-industrial-yellow outline-none transition-colors text-white rounded-sm"
-                      id="input-city"
-                    />
-                  </div>
-                  
-                  <button 
-                    type="submit"
-                    className="w-full bg-industrial-yellow text-black py-6 rounded-sm font-display font-black text-2xl uppercase tracking-wider hover:bg-industrial-yellow/90 transition-all shadow-[0_8px_0_0_#CCAA00] active:translate-y-1 active:shadow-none mt-4 flex items-center justify-center gap-3"
-                    id="submit-cod"
-                  >
-                    ¡PÍDELO AHORA Y PAGA AL RECIBIR!
-                  </button>
+      {/* Pedido */}
+      <section id="pedido" className="scroll-mt-4 border-t-4 border-sky bg-cloud px-4 py-10 text-center">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-ok/40 bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-ok">
+          <ShieldCheck className="h-3.5 w-3.5" /> Pago 100% seguro contra reembolso
+        </span>
+        <h2 className="mt-3 font-display text-2xl font-extrabold text-navy">Completa tu pedido</h2>
+        <p className="mt-1 text-sm text-slate-500">Elige tu pack, tu modelo y paga al recibir en casa.</p>
+        {/* Pega aquí el código del formulario de pedido de YouCan */}
+        <div className="mt-6 rounded-2xl border-2 border-dashed border-brand/40 bg-white p-6 text-sm">
+          <p className="font-bold text-navy">Formulario de pedido YouCan</p>
+          <p className="mt-1 text-xs text-slate-500">
+            Pack seleccionado: <strong>{PACKS.find((p) => p.id === pack)?.title}</strong> — pack, talla, nombre,
+            teléfono, dirección y botón de confirmación.
+          </p>
+        </div>
+      </section>
 
-                  <div className="flex items-center gap-4 py-8">
-                    <div className="flex-1 h-px bg-white/10" />
-                    <span className="text-gray-500 text-xs font-bold uppercase tracking-widest shrink-0">O paga de forma segura ahora</span>
-                    <div className="flex-1 h-px bg-white/10" />
-                  </div>
-
-                  {/* PayPal Placeholder Section */}
-                  {/* <PayPalIntegrationCode /> */}
-                  <div className="space-y-4">
-                    <button 
-                      type="button"
-                      className="w-full bg-[#ffc439] text-[#2c2e2f] font-bold py-4 rounded-sm flex items-center justify-center gap-3 hover:bg-[#f4bb33] transition-colors"
-                      id="paypal-placeholder"
-                    >
-                      <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg" alt="PayPal" className="h-6" referrerPolicy="no-referrer" />
-                      Pagar con PayPal
-                    </button>
-                    <p className="text-center text-[10px] text-gray-500 uppercase tracking-widest">Pago 100% encriptado con seguridad SSL</p>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="bg-industrial-dark py-12 px-4 border-t border-white/5">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <img src={LOGO_URL} alt="Total Painter Logo" className="h-8 opacity-50 grayscale" referrerPolicy="no-referrer" />
-            <div className="flex gap-8 text-xs font-bold uppercase tracking-widest text-gray-500">
-              <a href="#" className="hover:text-industrial-yellow transition-colors">Privacidad</a>
-              <a href="#" className="hover:text-industrial-yellow transition-colors">Términos</a>
-              <a href="#" className="hover:text-industrial-yellow transition-colors">Soporte</a>
-            </div>
-            <p className="text-xs text-gray-600">© {new Date().getFullYear()} Total Painter SL. Todos los derechos reservados.</p>
-          </div>
-        </footer>
-      </main>
-
-      {/* Floating Sticky CTA for Mobile */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 z-40 bg-gradient-to-t from-industrial-dark to-transparent">
-        <button 
-          onClick={scrollToCheckout}
-          className="w-full bg-industrial-yellow text-black py-4 rounded-sm font-display font-black text-xl uppercase tracking-wider shadow-2xl"
-          id="mobile-sticky-cta"
-        >
-          ¡COMPRAR POR 59€!
-        </button>
-      </div>
-
-      <style>{`
-        /* Minimalist scrollbar */
-        ::-webkit-scrollbar {
-          width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #111111;
-        }
-        ::-webkit-scrollbar-thumb {
-          background: #333333;
-          border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-          background: #FFCC00;
-        }
-      `}</style>
+      {/* Footer */}
+      <footer className="bg-navy px-4 py-10 text-center text-xs text-white/70">
+        <div className="mx-auto w-fit rounded-2xl bg-white px-4 py-2">
+          <img src={IMAGES.logo} alt="Nubepaso" className="h-20 w-auto" />
+        </div>
+        <p className="mt-5">Envíos operados por Correos Express / GLS.</p>
+        <p className="mt-2 space-x-2">
+          <a href="#" className="hover:text-white">Política de privacidad</a>·
+          <a href="#" className="hover:text-white">Términos y condiciones</a>·
+          <a href="#" className="hover:text-white">Contacto</a>
+        </p>
+        <p className="mt-2 text-white/50">© {new Date().getFullYear()} Nubepaso. Todos los derechos reservados.</p>
+      </footer>
     </div>
   );
 }
