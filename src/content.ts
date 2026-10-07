@@ -61,7 +61,7 @@ export const REVIEWS = [
 export const FAQ = [
   {
     q: '¿Cómo pago mi pedido?',
-    a: 'Pagas en efectivo al repartidor cuando recibes el paquete en casa. No necesitas tarjeta.',
+    a: 'Como prefieras: en efectivo al repartidor cuando recibes el paquete (contra reembolso) o al momento con PayPal.',
   },
   {
     q: '¿Cuánto tarda el envío?',
@@ -80,3 +80,9 @@ export const FAQ = [
     a: 'Sí, puedes lavarlas a mano con agua y jabón neutro. Se secan rápidamente gracias a su tejido microperforado.',
   },
 ];
+
+export const SHOE_SIZES = ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'];
+
+// Client ID público de tu app PayPal (developer.paypal.com → Apps & Credentials → Live).
+// Se configura en Netlify como variable de entorno VITE_PAYPAL_CLIENT_ID.
+export const PAYPAL_CLIENT_ID: string = import.meta.env.VITE_PAYPAL_CLIENT_ID ?? '';

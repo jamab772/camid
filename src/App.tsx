@@ -16,6 +16,7 @@ import {
   Truck,
   X,
 } from 'lucide-react';
+import OrderForm from './OrderForm';
 import { COMPARISON, FAQ, FEATURES, IMAGES, PACKS, PAINS, RATING, REVIEWS } from './content';
 
 const euro = (n: number) => n.toFixed(2).replace('.', ',') + ' €';
@@ -158,7 +159,7 @@ export default function App() {
         </div>
         <p className="mt-3 flex items-center justify-center gap-1 text-center text-[11px] text-slate-500">
           <Lock className="h-3 w-3 text-ok" /> La selección de pack, talla y pago se realiza de forma segura en el
-          formulario de pedido.
+          formulario de pedido, al final de la página.
         </p>
       </section>
 
@@ -348,18 +349,11 @@ export default function App() {
       {/* Pedido */}
       <section id="pedido" className="scroll-mt-4 border-t-4 border-sky bg-cloud px-4 py-10 text-center">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-ok/40 bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-ok">
-          <ShieldCheck className="h-3.5 w-3.5" /> Pago 100% seguro contra reembolso
+          <ShieldCheck className="h-3.5 w-3.5" /> Pago 100% seguro
         </span>
         <h2 className="mt-3 font-display text-2xl font-extrabold text-navy">Completa tu pedido</h2>
-        <p className="mt-1 text-sm text-slate-500">Elige tu pack, tu modelo y paga al recibir en casa.</p>
-        {/* Pega aquí el código del formulario de pedido de YouCan */}
-        <div className="mt-6 rounded-2xl border-2 border-dashed border-brand/40 bg-white p-6 text-sm">
-          <p className="font-bold text-navy">Formulario de pedido YouCan</p>
-          <p className="mt-1 text-xs text-slate-500">
-            Pack seleccionado: <strong>{PACKS.find((p) => p.id === pack)?.title}</strong> — pack, talla, nombre,
-            teléfono, dirección y botón de confirmación.
-          </p>
-        </div>
+        <p className="mt-1 text-sm text-slate-500">Paga al recibir en casa o con PayPal.</p>
+        <OrderForm pack={pack} setPack={setPack} />
       </section>
 
       {/* Footer */}
