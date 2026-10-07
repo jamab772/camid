@@ -19,6 +19,7 @@ import {
   ARCH_POINTS,
   COMPARISON,
   CUT_STEPS,
+  SIZE_MODELS,
   FEATURES,
   IMAGES,
   MASSAGE_POINTS,
@@ -264,10 +265,26 @@ export default function App() {
           <Scissors className="h-7 w-7 shrink-0 text-sky" /> ¿Miedo a equivocarte de talla?
         </h2>
         <Lead>
-          <strong className="text-navy">¡Imposible!</strong> Talla universal y totalmente ajustable. Sirven para
-          cualquier zapato.
+          <strong className="text-navy">¡Imposible!</strong> Hay dos modelos y cada uno se recorta a tu talla exacta.
+          Sirven para cualquier zapato.
         </Lead>
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          {SIZE_MODELS.map((m) => (
+            <div key={m.who} className="rounded-2xl border-2 border-brand/20 bg-cloud p-4 text-center">
+              <p className="text-sm font-bold uppercase tracking-widest text-brand">{m.who}</p>
+              <p className="mt-1 font-display text-2xl font-extrabold text-navy">{m.range}</p>
+              <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+                {m.sizes.map((t) => (
+                  <span key={t} className="rounded-md bg-white px-2 py-0.5 text-sm font-semibold text-navy shadow-sm">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
         <Img src={IMAGES.cut} alt="Plantilla recortable" className="mt-6 w-full rounded-2xl shadow-sm" />
+        <h3 className="mt-8 text-center font-display text-xl font-extrabold text-navy">Cómo recortarlas en 4 pasos</h3>
         <div className="mt-6 grid gap-3">
           {CUT_STEPS.map((s) => (
             <div key={s.n} className="flex items-center gap-4 rounded-2xl bg-cloud p-4">

@@ -42,15 +42,21 @@ export const MASSAGE_POINTS = [
   'Ayudan a reducir la sensación de cansancio al final del día',
 ];
 
+export const SIZE_MODELS = [
+  { who: 'Mujer', range: '35 a 39', sizes: ['35', '36', '37', '38', '39'] },
+  { who: 'Hombre', range: '40 a 45', sizes: ['40', '41', '42', '43', '44', '45'] },
+];
+
 export const CUT_STEPS = [
-  { n: '1', title: 'Coloca tu plantilla vieja', desc: 'O el pie, encima de la plantilla Nubepaso.' },
-  { n: '2', title: 'Sigue las líneas guía', desc: 'Marcadas con tu talla en la parte trasera.' },
-  { n: '3', title: 'Recorta y listo', desc: 'Con unas tijeras normales, en segundos.' },
+  { n: '1', title: 'Elige tu modelo', desc: 'Mujer (35 a 39) u Hombre (40 a 45).' },
+  { n: '2', title: 'Busca tu talla', desc: 'En la parte delantera verás una línea marcada con cada número.' },
+  { n: '3', title: 'Compara con tu plantilla vieja', desc: 'Ponla encima para comprobar el largo exacto.' },
+  { n: '4', title: 'Recorta por la línea', desc: 'Con unas tijeras normales, en segundos. ¡Y listo!' },
 ];
 
 export const SPECS = [
   ['Material', 'Espuma viscoelástica + tejido de bambú'],
-  ['Talla', 'Universal y recortable (35 a 46)'],
+  ['Tallas', 'Mujer 35 a 39 · Hombre 40 a 45 (recortables)'],
   ['Transpirable', 'Sí, superficie microperforada'],
   ['Lavable', 'A mano, con agua y jabón neutro'],
   ['Uso', 'Deportivas, calzado de trabajo y de vestir'],
